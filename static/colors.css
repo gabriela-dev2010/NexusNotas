@@ -1,0 +1,17 @@
+:root {
+    /* COLORES EXACTOS DE TU FOTO */
+    --bg-dark: #0a1929;
+    --bg-topbar: #1e3a5f;
+    --bg-card: rgba(44, 82, 130, 0.4);
+    --bg-input: rgba(255, 255, 255, 0.9);
+    --bg-input-dark: rgba(255, 255, 255, 0.15);
+    --borde: rgba(255, 255, 255, 0.1);
+    
+    --azul-cyan: #00C4FF;
+    --azul-hover: #00A8E0;
+    --texto-blanco: #FFFFFF;
+    --texto-gris: rgba(255, 255, 255, 0.7);
+    
+    --verde: #4CAF50;
+    --rojo: #F44336;
+}

@@ -138,59 +138,7 @@ def dashboard():
     db = get_db()
     user = db.execute('SELECT * FROM estudiantes WHERE id =?', (session['user_id'],)).fetchone()
     return render_template('dashboard.html', user=user)
-
-@app.route('/calculadora', methods=['GET', 'POST'])
-@login_required
-def calculadora():
-    """
-    Lógica de la calculadora según 'Propuesta de Solución' del informe.
-    Calcula la nota necesaria en el corte final para aprobar.
-    """
-    resultado = None
-    db = get_db()
-    user = db.execute('SELECT nota_aprob, nota_max FROM estudiantes WHERE id =?', (session['user_id'],)).fetchone()
     
-    if request.method == 'POST':
-        try:
-            # Notas y porcentajes de los 3 primeros cortes
-            notas = []
-            porcentajes = []
-            for i in range(1, 4):
-                nota = float(request.form[f'nota{i}'])
-                porc = float(request.form[f'porc{i}'])
-                notas.append(nota)
-                porcentajes.append(porc)
-            
-            # Porcentaje del corte final
-            porc_final = float(request.form['porc_final'])
-            
-            if sum(porcentajes) + porc_final!= 100:
-                raise ValueError("La suma de todos los porcentajes debe ser 100%")
-            
-            # Suma ponderada actual
-            nota_actual = sum(n * p/100 for n, p in zip(notas, porcentajes))
-            
-            # Cálculo: qué necesito en el final
-            if porc_final == 0:
-                nota_necesaria = nota_actual
-            else:
-                nota_necesaria = (user['nota_aprob'] - nota_actual) / (porc_final / 100)
-            
-            resultado = {
-                'nota_actual': round(nota_actual, 2),
-                'necesaria': round(nota_necesaria, 2),
-                'aprueba': nota_necesaria <= user['nota_max'],
-                'porc_final': porc_final,
-                'nota_aprob': user['nota_aprob']
-            }
-            
-        except ValueError as e:
-            flash(f'Error en el cálculo: {str(e)}', 'error')
-        except Exception:
-            flash('Error: Verifica que todos los campos sean números válidos.', 'error')
-
-    return render_template('calculadora.html', resultado=resultado, user=user)
-
 # --- INICIAR APP ---
 if __name__ == '__main__':
     # Crea la BD si no existe al iniciar
