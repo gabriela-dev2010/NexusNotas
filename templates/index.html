@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusNotas - Tu control, tu futuro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f4f8;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* HERO SECTION - Degradado morado a azul */
+        .hero {
+            background: linear-gradient(135deg, #c4b5fd 0%, #3b82f6 100%);
+            border-radius: 28px;
+            padding: 50px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            min-height: 320px;
+        }
+
+        .hero-content {
+            max-width: 48%;
+            z-index: 2;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1e40af;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .logo i {
+            color: #1e40af;
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            color: #1e3a8a;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .hero p {
+            font-size: 22px;
+            color: #1e3a8a;
+            font-weight: 500;
+            margin-bottom: 32px;
+            line-height: 1.4;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #1e40af;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e3a8a;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.3);
+            color: #1e40af;
+            border: 2px solid #1e40af;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .hero-image img {
+            max-width: 450px;
+            height: auto;
+        }
+
+        /* 5 TARJETAS DE FEATURES */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card.blue {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-top: 16px;
+        }
+
+        .feature-card.blue .feature-icon {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- HERO CON DEGRADADO -->
+        <div class="hero">
+            <div class="hero-content">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    NexusNotas
+                </div>
+                <h1>NexusNotas</h1>
+                <p>Tu control, tu futuro, organiza tus<br>notas, impulsa tu éxito.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="window.location.href='/registro'">Registrarse Gratis</button>
+                    <button class="btn btn-secondary" onclick="window.location.href='/login'">Iniciar sesión</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="{{ url_for('static', filename='img/estudiantes-nexus.png') }}" 
+                     alt="Estudiantes usando NexusNotas" 
+                     class="banner-img">
+            </div>
+        </div>
+
+        <!-- 5 TARJETAS DE FEATURES -->
+        <div class="features">
+            <div class="feature-card blue">
+                <h3>Control total<br>de tus notas</h3>
+                <div class="feature-icon"><i class="fas fa-home"></i></div>
+            </div>
+            <div class="feature-card">
+                <h3>Calcula tu<br>promedio al instante</h3>
+                <div class="feature-icon"><i class="fas fa-calculator"></i></div>
+            </div>
+            <div class="feature-card">
+                <h3>Calendario<br>académico</h3>
+                <div class="feature-icon"><i class="fas fa-calendar"></i></div>
+            </div>
+            <div class="feature-card">
+                <h3>Recordatorios<br>automáticos</h3>
+                <div class="feature-icon"><i class="fas fa-bell"></i></div>
+            </div>
+            <div class="feature-card">
+                <h3>100% privado<br>y autónomo</h3>
+                <div class="feature-icon"><i class="fas fa-lock"></i></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
