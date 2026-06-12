@@ -4,202 +4,326 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NexusNotas - Tu control, tu futuro</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+        
+        :root {
+            --azul-principal: #1E88E5;
+            --azul-oscuro: #0D47A1;
+            --azul-claro: #E3F2FD;
+            --verde-card: #E0F7FA;
+            --gris-card: #ECEFF1;
+            --texto-oscuro: #1A237E;
+            --bg-dark: #0a192f;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: #f0f4f8;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark);
+            color: var(--texto-oscuro);
         }
 
-        .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
 
-        /* HERO SECTION - Degradado morado a azul */
+        /* HERO SECTION */
         .hero {
-            background: linear-gradient(135deg, #c4b5fd 0%, #3b82f6 100%);
-            border-radius: 28px;
-            padding: 50px 60px;
-            display: flex;
+            background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+            border-radius: 25px;
+            padding: 60px 80px;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
+            gap: 40px;
             position: relative;
             overflow: hidden;
-            min-height: 320px;
+            min-height: 450px;
         }
 
-        .hero-content {
-            max-width: 48%;
-            z-index: 2;
-        }
+        .hero-content .logo { font-size: 18px; font-weight: 700; color: var(--azul-oscuro); margin-bottom: 10px; }
+        .hero h1 { font-size: 64px; font-weight: 800; color: var(--azul-oscuro); line-height: 1; margin-bottom: 15px; }
+        .hero p { font-size: 18px; color: var(--azul-oscuro); opacity: 0.9; margin-bottom: 35px; max-width: 400px; }
+        .hero-buttons { display: flex; gap: 15px; }
+        .btn { padding: 14px 32px; border-radius: 12px; font-size: 16px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: all 0.3s ease; }
+        .btn-primary { background: var(--azul-oscuro); color: white; }
+        .btn-primary:hover { background: #0a357a; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13, 71, 161, 0.4); }
+        .btn-secondary { background: var(--azul-claro); color: var(--azul-oscuro); }
+        .btn-secondary:hover { background: #bbdefb; transform: translateY(-2px); }
+        .hero-image { text-align: right; }
+        .hero-image img { max-width: 100%; height: auto; border-radius: 20px; }
 
-        .logo {
-            font-size: 20px;
-            font-weight: 800;
-            color: #1e40af;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-
-        .logo i {
-            color: #1e40af;
-        }
-
-        .hero h1 {
-            font-size: 52px;
-            color: #1e3a8a;
-            font-weight: 700;
-            margin-bottom: 12px;
-            letter-spacing: -1px;
-        }
-
-        .hero p {
-            font-size: 22px;
-            color: #1e3a8a;
-            font-weight: 500;
-            margin-bottom: 32px;
-            line-height: 1.4;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 16px;
-        }
-
-        .btn {
-            padding: 14px 30px;
-            border-radius: 30px;
-            border: none;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: #1e40af;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1e3a8a;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.3);
-            color: #1e40af;
-            border: 2px solid #1e40af;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        .hero-image img {
-            max-width: 450px;
-            height: auto;
-        }
-
-        /* 5 TARJETAS DE FEATURES */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 16px;
-            margin-top: 24px;
-        }
-
+        /* FEATURES CARDS */
+        .features { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-top: 30px; }
         .feature-card {
+            padding: 25px 20px;
+            border-radius: 18px;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .feature-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.25); }
+        .feature-card h3 { font-size: 16px; font-weight: 700; line-height: 1.3; }
+        .feature-card i { font-size: 28px; opacity: 0.8; align-self: flex-start; }
+        .card-blue { background: var(--azul-principal); color: white; }
+        .card-green { background: var(--verde-card); color: var(--texto-oscuro); }
+        .card-gray { background: var(--gris-card); color: var(--texto-oscuro); }
+        .card-gray-light { background: #F5F5F5; color: var(--texto-oscuro); }
+        .card-gray-dark { background: #CFD8DC; color: var(--texto-oscuro); }
+
+        /* MODAL - Se abre al hacer clic */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 25, 47, 0.85);
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease;
+        }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-content {
             background: white;
-            border-radius: 16px;
-            padding: 24px;
-            text-align: left;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 550px;
+            width: 90%;
+            position: relative;
+            animation: slideUp 0.4s ease;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-content h2 { color: var(--azul-oscuro); font-size: 28px; margin-bottom: 15px; display: flex; align-items: center; gap: 12px; }
+        .modal-content p { color: #37474f; font-size: 16px; line-height: 1.7; margin-bottom: 25px; }
+        .modal-content ul { margin-left: 20px; color: #37474f; line-height: 1.8; }
+        .modal-content ul li { margin-bottom: 8px; }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 32px;
+            color: #90a4ae;
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+        .close-modal:hover { color: var(--azul-oscuro); transform: rotate(90deg); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* FOOTER REDES SOCIALES */
+        .footer-social {
+            margin-top: 50px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        .footer-social h4 { color: white; font-size: 18px; margin-bottom: 25px; font-weight: 600; }
+        .social-icons { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .social-icon {
+            width: 55px; height: 55px; border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 24px; text-decoration: none;
             transition: all 0.3s ease;
         }
-
-        .feature-card.blue {
-            background: #3b82f6;
-            color: white;
+        .social-icon:hover {
+            background: var(--azul-principal);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 8px 20px rgba(30,136,229,0.5);
         }
 
-        .feature-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        /* RESPONSIVE */
+        @media (max-width: 1100px) {
+            .hero { grid-template-columns: 1fr; text-align: center; padding: 40px 30px; }
+            .hero-content { order: 2; }
+            .hero-image { order: 1; }
+            .hero p { margin: 0 auto 35px auto; }
+            .hero-buttons { justify-content: center; }
+            .features { grid-template-columns: repeat(3, 1fr); }
         }
-
-        .feature-card h3 {
-            font-size: 18px;
-            margin-bottom: 12px;
-            font-weight: 600;
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 42px; }
+            .features { grid-template-columns: repeat(2, 1fr); }
+            .modal-content { padding: 30px 25px; }
         }
-
-        .feature-icon {
-            font-size: 32px;
-            margin-top: 16px;
-        }
-
-        .feature-card.blue .feature-icon {
-            color: white;
+        @media (max-width: 500px) {
+            .features { grid-template-columns: 1fr; }
+            .hero-buttons { flex-direction: column; }
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- HERO CON DEGRADADO -->
-        <div class="hero">
+    <div class="container">
+        <!-- HERO -->
+        <section class="hero">
             <div class="hero-content">
-                <div class="logo">
-                    <i class="fas fa-graduation-cap"></i>
-                    NexusNotas
-                </div>
+                <div class="logo">NexusNotas</div>
                 <h1>NexusNotas</h1>
-                <p>Tu control, tu futuro, organiza tus<br>notas, impulsa tu éxito.</p>
+                <p>Tu control, tu futuro, organiza tus notas, impulsa tu éxito.</p>
                 <div class="hero-buttons">
-                    <button class="btn btn-primary" onclick="window.location.href='/registro'">Registrarse Gratis</button>
-                    <button class="btn btn-secondary" onclick="window.location.href='/login'">Iniciar sesión</button>
+                    <a href="{{ url_for('registro') }}" class="btn btn-primary">Registrarse Gratis</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-secondary">Iniciar sesión</a>
                 </div>
             </div>
             <div class="hero-image">
-                <img src="{{ url_for('static', filename='img/estudiantes-nexus.png') }}" 
-                     alt="Estudiantes usando NexusNotas" 
-                     class="banner-img">
+                <img src="{{ url_for('static', filename='img/estudiantes-nexus.png') }}" alt="Estudiantes usando NexusNotas" onerror="this.style.display='none'">
             </div>
-        </div>
+        </section>
 
-        <!-- 5 TARJETAS DE FEATURES -->
-        <div class="features">
-            <div class="feature-card blue">
+        <!-- FEATURES CON CLICK -->
+        <section class="features">
+            <div class="feature-card card-blue" onclick="openModal('modal1')">
                 <h3>Control total<br>de tus notas</h3>
-                <div class="feature-icon"><i class="fas fa-home"></i></div>
+                <i class="fas fa-home"></i>
             </div>
-            <div class="feature-card">
-                <h3>Calcula tu<br>promedio al instante</h3>
-                <div class="feature-icon"><i class="fas fa-calculator"></i></div>
+            
+            <div class="feature-card card-green" onclick="openModal('modal2')">
+                <h3>Calcula tu<br>promedio al<br>instante</h3>
+                <i class="fas fa-calculator"></i>
             </div>
-            <div class="feature-card">
+            
+            <div class="feature-card card-gray" onclick="openModal('modal3')">
                 <h3>Calendario<br>académico</h3>
-                <div class="feature-icon"><i class="fas fa-calendar"></i></div>
+                <i class="fas fa-calendar-days"></i>
             </div>
-            <div class="feature-card">
+            
+            <div class="feature-card card-gray-light" onclick="openModal('modal4')">
                 <h3>Recordatorios<br>automáticos</h3>
-                <div class="feature-icon"><i class="fas fa-bell"></i></div>
+                <i class="fas fa-bell"></i>
             </div>
-            <div class="feature-card">
+            
+            <div class="feature-card card-gray-dark" onclick="openModal('modal5')">
                 <h3>100% privado<br>y autónomo</h3>
-                <div class="feature-icon"><i class="fas fa-lock"></i></div>
+                <i class="fas fa-user-shield"></i>
             </div>
+        </section>
+
+        <!-- FOOTER REDES SOCIALES - SIN COPYRIGHT -->
+        <footer class="footer-social">
+            <h4>Síguenos y únete a la comunidad NexusNotas</h4>
+            <div class="social-icons">
+                <a href="https://instagram.com/nexusnotas" target="_blank" class="social-icon" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://facebook.com/nexusnotas" target="_blank" class="social-icon" title="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://tiktok.com/@nexusnotas" target="_blank" class="social-icon" title="TikTok">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+                <a href="https://youtube.com/@nexusnotas" target="_blank" class="social-icon" title="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="mailto:soporte@nexusnotas.com" class="social-icon" title="Correo">
+                    <i class="fas fa-envelope"></i>
+                </a>
+                <a href="https://github.com/nexusnotas" target="_blank" class="social-icon" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- MODALES - Info detallada de cada tarjeta -->
+    <div id="modal1" class="modal" onclick="closeModal('modal1')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeModal('modal1')">&times;</span>
+            <h2><i class="fas fa-home" style="color: #1E88E5;"></i> Control total de tus notas</h2>
+            <p>NexusNotas centraliza toda tu vida académica en un solo lugar. Olvídate de libretas perdidas o Excel desordenados.</p>
+            <ul>
+                <li><b>Guarda todas tus materias</b> con sus respectivos cortes y porcentajes.</li>
+                <li><b>Registra cada calificación</b> y el sistema actualiza tu promedio automáticamente.</li>
+                <li><b>Accede desde cualquier dispositivo</b>: PC, tablet o celular. Tus datos se sincronizan.</li>
+                <li><b>Historial completo</b>: Revisa tus notas de periodos anteriores para ver tu progreso.</li>
+            </ul>
         </div>
     </div>
+
+    <div id="modal2" class="modal" onclick="closeModal('modal2')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeModal('modal2')">&times;</span>
+            <h2><i class="fas fa-calculator" style="color: #1E88E5;"></i> Calcula tu promedio al instante</h2>
+            <p>Esta es la función principal de nuestro informe técnico. No más cálculos manuales con errores.</p>
+            <ul>
+                <li><b>Cálculo por porcentajes</b>: Ingresa tus notas y cuánto vale cada corte. NexusNotas hace la matemática.</li>
+                <li><b>¿Cuánto necesito para pasar?</b>: Te dice exactamente qué nota debes sacar en el final para aprobar la materia.</li>
+                <li><b>Simulador de notas</b>: Prueba diferentes escenarios antes de presentar un examen.</li>
+                <li><b>Soporta escalas 1.0 a 5.0</b> o la que use tu colegio. Tú la configuras al registrarte.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="modal3" class="modal" onclick="closeModal('modal3')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeModal('modal3')">&times;</span>
+            <h2><i class="fas fa-calendar-days" style="color: #1E88E5;"></i> Calendario académico</h2>
+            <p>Organiza tu periodo sin estrés. Todo lo importante en una vista.</p>
+            <ul>
+                <li><b>Registra fechas clave</b>: Parciales, entregas, exposiciones y recuperaciones.</li>
+                <li><b>Vista mensual y semanal</b>: Planifica tu tiempo de estudio.</li>
+                <li><b>Código de colores</b>: Identifica rápido qué materias tienen eventos próximos.</li>
+                <li><b>Exportable</b>: Sincroniza con Google Calendar si quieres.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="modal4" class="modal" onclick="closeModal('modal4')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeModal('modal4')">&times;</span>
+            <h2><i class="fas fa-bell" style="color: #1E88E5;"></i> Recordatorios automáticos</h2>
+            <p>Parte de nuestra <b>propuesta de escalabilidad</b>. NexusNotas piensa por ti.</p>
+            <ul>
+                <li><b>Alertas inteligentes</b>: Te avisa 3 días antes de un parcial o entrega.</li>
+                <li><b>Notificación de riesgo</b>: Si vas perdiendo una materia, te lo advierte con tiempo.</li>
+                <li><b>Consejos personalizados</b>: "Necesitas 4.2 en el final para pasar Matemáticas".</li>
+                <li><b>Configurable</b>: Tú decides si quieres recibir correos o notificaciones push.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="modal5" class="modal" onclick="closeModal('modal5')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeModal('modal5')">&times;</span>
+            <h2><i class="fas fa-user-shield" style="color: #1E88E5;"></i> 100% privado y autónomo</h2>
+            <p>Cumple con los <b>resultados</b> de tu informe: interfaz accesible y segura.</p>
+            <ul>
+                <li><b>Tus datos son tuyos</b>: No vendemos ni compartimos tu información académica.</li>
+                <li><b>Contraseñas encriptadas</b>: Usamos hash seguro. Ni nosotros vemos tu clave.</li>
+                <li><b>Sin anuncios</b>: La app es para estudiar, no para distraerte.</li>
+                <li><b>Funciona offline</b>: Próximamente. Podrás ver tus notas sin internet.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden'; // Bloquea scroll del fondo
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cerrar con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+                document.body.style.overflow = 'auto';
+            }
+        });
+    </script>
 </body>
 </html>
