@@ -138,6 +138,64 @@ def dashboard():
     db = get_db()
     user = db.execute('SELECT * FROM estudiantes WHERE id =?', (session['user_id'],)).fetchone()
     return render_template('dashboard.html', user=user)
+
+@app.route('/mis_materias')
+@login_required
+def mis_materias():
+    db = get_db()
+    materias = db.execute(
+        'SELECT * FROM materias WHERE estudiante_id = ? ORDER BY fecha_creacion DESC',
+        (session['user_id'],)  # Ojo: usa 'user_id' si así se llama en tu session
+    ).fetchall()
+    return render_template('mis_materias.html', materias=materias)
+
+@app.route('/borrar_materia/<int:id>', methods=['POST'])
+@login_required
+def borrar_materia(id):
+    db = get_db()
+    db.execute('DELETE FROM materias WHERE id = ? AND estudiante_id = ?', 
+               (id, session['user_id']))
+    db.commit()
+    return redirect(url_for('mis_materias'))
+
+@app.route('/editar_materia/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editar_materia(id):
+    db = get_db()
+    if request.method == 'POST':
+        nota1 = float(request.form['nota1'])
+        nota2 = float(request.form['nota2'])
+        nota3 = float(request.form['nota3'])
+        nota_final = round((nota1 + nota2 + nota3) / 3, 2)
+        
+        db.execute(
+            'UPDATE materias SET nota1=?, nota2=?, nota3=?, nota_final=? WHERE id=? AND estudiante_id=?',
+            (nota1, nota2, nota3, nota_final, id, session['user_id'])
+        )
+        db.commit()
+        return redirect(url_for('mis_materias'))
+    
+    materia = db.execute('SELECT * FROM materias WHERE id=?', (id,)).fetchone()
+    return render_template('editar_materia.html', materia=materia)
+
+@app.route('/guardar_nota', methods=['POST'])
+@login_required
+def guardar_nota():
+    data = request.get_json()
+    nombre_materia = data['materia']
+    nota1 = float(data['nota1'])
+    nota2 = float(data['nota2']) 
+    nota3 = float(data['nota3'])
+    nota_final = round((nota1 + nota2 + nota3) / 3, 2)
+    
+    db = get_db()
+    db.execute(
+        'INSERT INTO materias (estudiante_id, nombre, nota1, nota2, nota3, nota_final) VALUES (?, ?, ?, ?, ?, ?)',
+        (session['user_id'], nombre_materia, nota1, nota2, nota3, nota_final)
+    )
+    db.commit()
+    return jsonify({'status': 'ok', 'promedio': nota_final})
+
     
 # --- INICIAR APP ---
 if __name__ == '__main__':

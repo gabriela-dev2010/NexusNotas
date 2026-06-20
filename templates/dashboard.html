@@ -482,25 +482,53 @@ function agregarNota() {
     contenedor.appendChild(div);
 }
 
-function guardarMateria() {
+async function guardarMateria() {
     const nombre = document.getElementById('nombreMateria').value;
     const promedio = document.getElementById('promedioActual').value;
+    
+    // 1. Agarramos TODAS las notas individuales
+    const notasInputs = document.querySelectorAll('#contenedor-notas input[type="number"]');
+    const notas = [];
+    notasInputs.forEach(input => {
+        if(input.value) notas.push(parseFloat(input.value));
+    });
 
     if (!nombre) {
         alert('Escribe el nombre de la materia primero');
         return;
     }
-    if (promedio === '--') {
-        alert('Agrega al menos una nota');
+    if (notas.length < 2) {
+        alert('Agrega al menos 2 notas');
         return;
     }
 
-    // Guardar en LocalStorage
-    const materias = JSON.parse(localStorage.getItem('materias') || '{}');
-    materias[nombre] = parseFloat(promedio);
-    localStorage.setItem('materias', JSON.stringify(materias));
+    // 2. MANDAMOS A FLASK, NO A LOCALSTORAGE
+    try {
+        const response = await fetch('/guardar_nota', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                materia: nombre,
+                nota1: notas[0] || 0,
+                nota2: notas[1] || 0,
+                nota3: notas[2] || 0
+            })
+        });
 
-    alert(`✅ ${nombre} guardada con promedio ${promedio}`);
+        const data = await response.json();
+
+        if (data.status == 'ok') {
+            alert(`✅ ${nombre} guardada con promedio ${data.promedio}`);
+            location.reload(); // Recarga pa' que veas la materia en la tabla
+        } else {
+            alert('Error al guardar en la base de datos 😭');
+        }
+    } catch (error) {
+        alert('Error de conexión con Flask');
+        console.log(error);
+    }
+    // CAMBIA LA CARITA DE LA MASCOTA SEGÚN LA NOTA
+actualizarMascotaNexus(parseFloat(promedio), 3.0, 100);
 
     // Limpiar campos
     document.getElementById('nombreMateria').value = '';

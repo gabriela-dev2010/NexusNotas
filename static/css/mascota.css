@@ -1,0 +1,121 @@
+.nexus-mascota {
+  position: absolute;
+  bottom: 80px;
+  left: 40px;
+  width: 180px;
+  height: auto;
+  z-index: 10;
+  pointer-events: auto;
+  animation: nexusFloat 3s ease-in-out infinite;
+}
+
+.nexus-mascota::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+  filter: blur(4px);
+  animation: nexusShadow 3s ease-in-out infinite;
+  z-index: -1;
+}
+
+.nexus-mascota canvas {
+  width: 100%!important;
+  height: auto!important;
+  display: block;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.2));
+  transition: transform 0.2s;
+}
+
+.nexus-mascota:hover canvas {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.nexus-bubble {
+  position: absolute;
+  top: -20px;
+  left: 60%;
+  transform: translateX(-50%);
+  background: white;
+  border: 2px solid #1E90FF;
+  border-radius: 16px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+  color: #1A237E;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.nexus-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 25px;
+  border: 6px solid transparent;
+  border-top-color: #1E90FF;
+}
+
+.nexus-bubble.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-5px);
+}
+
+@keyframes nexusFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes nexusShadow {
+  0%, 100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translateX(-50%) scale(0.8);
+    opacity: 0.1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+ .nexus-mascota {
+    position: fixed;
+    width: 120px;
+    bottom: 20px;
+    right: 20px;
+    left: auto;
+  }
+ .nexus-bubble { font-size: 11px; }
+}
+
+@media (max-width: 480px) {
+ .nexus-mascota {
+    width: 90px;
+    bottom: 10px;
+    right: 10px;
+  }
+ .nexus-bubble {
+    font-size: 10px;
+    padding: 6px 12px;
+  }
+}
+
+body[data-page="login"].nexus-mascota,
+body[data-page="dashboard"].nexus-mascota,
+body[data-page="registro"].nexus-mascota {
+  position: fixed;
+  width: 110px;
+  bottom: 20px;
+  right: 20px;
+  left: auto;
+}

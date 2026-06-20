@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NexusNotas - Tu control, tu futuro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/mascota.css') }}">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
         
@@ -75,7 +76,7 @@
         .card-gray-light { background: #F5F5F5; color: var(--texto-oscuro); }
         .card-gray-dark { background: #CFD8DC; color: var(--texto-oscuro); }
 
-        /* MODAL - Se abre al hacer clic */
+        /* modal*/
         .modal {
             display: none;
             position: fixed;
@@ -207,7 +208,7 @@
             </div>
         </section>
 
-        <!-- FOOTER REDES SOCIALES - SIN COPYRIGHT -->
+        <!-- FOOTER REDES SOCIALES -->
         <footer class="footer-social">
             <h4>Síguenos y únete a la comunidad NexusNotas</h4>
             <div class="social-icons">
@@ -307,7 +308,7 @@
     <script>
         function openModal(id) {
             document.getElementById(id).classList.add('active');
-            document.body.style.overflow = 'hidden'; // Bloquea scroll del fondo
+            document.body.style.overflow = 'hidden'; 
         }
 
         function closeModal(id) {
@@ -325,5 +326,8 @@
             }
         });
     </script>
+    {% include 'components/mascota.html' %}
+    <script src="{{ url_for('static', filename='js/mascota.js') }}?v={{ range(1, 9999) | random }}"></script>
+    <script>initNexus();</script>
 </body>
 </html>

@@ -17,6 +17,10 @@ CREATE TABLE materias (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     estudiante_id INTEGER NOT NULL,
     nombre TEXT NOT NULL,
+    nota1 REAL,
+    nota2 REAL, 
+    nota3 REAL,
     nota_final REAL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (estudiante_id) REFERENCES estudiantes (id) ON DELETE CASCADE
 );
