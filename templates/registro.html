@@ -208,5 +208,8 @@
             this.classList.toggle('fa-eye-slash');
         });
     </script>
+    {% include 'components/mascota.html' %}
+    <script src="{{ url_for('static', filename='js/mascota.js') }}?v={{ range(1, 9999) | random }}"></script>
+    <script>initNexus();</script>
 </body>
 </html>

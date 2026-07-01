@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}ajustes{% endblock %}
+{% block content %}
+<h1><i class="fas fa-cog"></i> Configuración</h1>
+<p>Aquí vas a poner cambiar avatar, nota mínima, etc.</p>
+{% endblock %}
+{% include 'components/mascota.html' %}
+    <script src="{{ url_for('static', filename='js/mascota.js') }}?v={{ range(1, 9999) | random }}"></script>
+    <script>initNexus();</script>

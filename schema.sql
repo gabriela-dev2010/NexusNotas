@@ -1,5 +1,6 @@
-DROP TABLE IF EXISTS estudiantes;
+DROP TABLE IF EXISTS notas;
 DROP TABLE IF EXISTS materias;
+DROP TABLE IF EXISTS estudiantes;
 
 CREATE TABLE estudiantes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -17,10 +18,16 @@ CREATE TABLE materias (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     estudiante_id INTEGER NOT NULL,
     nombre TEXT NOT NULL,
-    nota1 REAL,
-    nota2 REAL, 
-    nota3 REAL,
-    nota_final REAL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (estudiante_id) REFERENCES estudiantes (id) ON DELETE CASCADE
+);
+
+CREATE TABLE notas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    materia_id INTEGER NOT NULL,
+    valor REAL NOT NULL,
+    descripcion TEXT,
+    periodo TEXT,
+    fecha TIMESTAMP DEFAULT NULL,
+    FOREIGN KEY (materia_id) REFERENCES materias (id) ON DELETE CASCADE
 );

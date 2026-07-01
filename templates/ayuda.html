@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Ayuda{% endblock %}
+{% block content %}
+<h1><i class="fas fa-question"></i> Ayuda</h1>
+<p>Preguntas frecuentes de NexusNotas.</p>
+{% endblock %}
+{% include 'components/mascota.html' %}
+    <script src="{{ url_for('static', filename='js/mascota.js') }}?v={{ range(1, 9999) | random }}"></script>
+    <script>initNexus();</script>

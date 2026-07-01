@@ -1,7 +1,7 @@
 // Nexus - Mascota NexusNotas
 const C = document.getElementById('nexusCanvas');
 const X = C.getContext('2d');
-const W = 280, H = 480;
+const W = 280, H = 500;
 
 // Colores
 const BR='#8B5A2B', BRD='#6B4320', BRL='#A67040', BRM='#7A4F22';
@@ -13,7 +13,7 @@ const PNK='rgba(255,150,170,0.38)';
 
 // Estado
 let pose=2, playing=true, timer=null;
-let hov=false, clicked=false;
+let hover=false, clicked=false;
 let t=0, blinkT=0, blinking=false, blinkP=0;
 let sparks=[], bbT=null;
 
@@ -31,6 +31,9 @@ const MSGS={
   'login':'¿Lista para tus notas?',
   'registro':'¡Únete a Nexus!',
   'dashboard':'Revisa tus materias',
+  'ajustes':'¿Quieres cambiar algo?',
+  'ayuda':'¿En que necesitas ayuda?',
+  'calendario':'Tienes tareas pendientes',
   'nota_alta':'¡Excelente trabajo!',
   'nota_baja':'A mejorar esta materia',
   'error_clave':'¿Olvidaste tu clave?',
@@ -41,7 +44,8 @@ const MSGS={
 // Funciones base
 function el(x,y,rx,ry,rot=0){
   X.save(); X.translate(x,y); X.rotate(rot);
-  X.beginPath(); X.ellipse(0,0,rx,ry,0,0,Math.PI*2); X.restore();
+  X.beginPath(); X.ellipse(0,0,rx,ry,0,0,Math.PI*2);X.restore();
+  //X.fill();  
 }
 
 function rr(x,y,w,h,r){
@@ -73,6 +77,9 @@ function setMood(ctx){
   if(ctx==='index') pose=2;
   if(ctx==='login') pose=3;
   if(ctx==='registro') pose=0;
+  if(ctx==='ajustes') pose=1;
+  if(ctx==='ayuda') pose=2;
+  if(ctx==='calendario') pose=4;
   if(ctx==='dashboard') pose=4;
   if(ctx==='nota_alta') pose=4;
   if(ctx==='nota_baja') pose=3;
@@ -94,8 +101,8 @@ function nexusFeedback(nota){
 // Dibujo Nexus
 function draw(){
   X.clearRect(0,0,W,H);
-  const cx=140, by=358+Math.sin(t*.04)*4;
-  const sq=clicked?1.07:(hov?1.03:1), sqy=clicked?.94:(hov?.97:1);
+  const cx=140, by=400+Math.sin(t*.04)*4;
+  const sq=clicked?1.07:(hover?1.03:1), sqy=clicked?.94:(hover?.97:1);
 
   X.save(); X.translate(cx,by); X.scale(sq,sqy); X.translate(-cx,-by);
 
@@ -105,9 +112,9 @@ function draw(){
 
   drawTail(cx,by);
   drawBody(cx,by);
-  drawLegs(cx,by);
   drawShirt(cx,by);
   drawArms(cx,by);
+  drawLegs(cx,by);
   drawHead(cx,by);
 
   X.restore();
@@ -134,7 +141,7 @@ function drawBody(cx,by){
 function drawShirt(cx,by){
   const bY=by-85;
   const sTop=bY-65;
-  const sBot=by-18;
+  const sBot=by-55;
   const sW=80;
 
   // Base oscura
@@ -192,15 +199,15 @@ function drawShirt(cx,by){
   X.beginPath(); X.moveTo(cx-28,sTop+38); X.quadraticCurveTo(cx-26,sTop+58,cx-24,sBot-28); X.stroke();
 
   // Mangas
-  const sleeveY=sTop+14;
+  const sleeveY=sTop+12;
   [-1,1].forEach(side=>{
-    const sx=cx+side*(sW-4);
-    X.save(); X.translate(sx,sleeveY); X.rotate(side*0.12);
+    const sx=cx+side*(sW-8);
+    X.save(); X.translate(sx,sleeveY); X.rotate(side*0.08);
     X.beginPath();
-    X.moveTo(0,0); X.quadraticCurveTo(side*10,6,side*16,38);
-    X.quadraticCurveTo(side*8,43,side*2,40);
-    X.quadraticCurveTo(-side*6,36,-side*8,28);
-    X.quadraticCurveTo(-side*8,6,0,0);
+    X.moveTo(0,0); X.quadraticCurveTo(side*8,5,side*14,32);
+    X.quadraticCurveTo(side*6,36,side*1,34);
+    X.quadraticCurveTo(-side*5,30,-side*6,24);
+    X.quadraticCurveTo(-side*6,5,0,0);
     X.closePath(); X.fillStyle=BLD; X.fill();
 
     X.beginPath();
@@ -233,59 +240,59 @@ function drawLegs(cx,by){
   });
 }
 
+
 function drawArms(cx,by){
   const bY=by-85;
+  const sTop=bY-70; 
   function armShape(side=1){
-    X.fillStyle=BRD; el(0,-20,17,28); X.fill();
-    X.fillStyle=BR; el(0,-22,15,26); X.fill();
-    X.fillStyle=BRL; el(-4*side,-30,6,12); X.fill();
-    X.fillStyle=BR; el(0,-46,13,12); X.fill();
+    
+    X.fillStyle=BRD; el(0,-12,13,20); X.fill(); 
+    X.fillStyle=BR; el(0,-14,11,18); X.fill();  
+    X.fillStyle=BRL; el(-3*side,-20,4,8); X.fill(); 
+    X.fillStyle=BR; el(0,-32,9,8); X.fill(); 
   }
 
+
   if(pose===0){
-    X.save(); X.translate(cx-46,bY-8); X.rotate(-0.28); armShape(-1); X.restore();
-    X.save(); X.translate(cx+46,bY-26);
-    const jig=Math.sin(t*.12)*5;
-    X.rotate((-78+jig)*Math.PI/180);
-    X.fillStyle=BRD; el(0,-20,17,28); X.fill();
-    X.fillStyle=BR; el(0,-22,15,26); X.fill();
-    X.fillStyle=BRL; el(-4,-30,6,12); X.fill();
-    X.fillStyle=BR; el(0,-44,12,11); X.fill();
-    X.fillStyle=BR; X.fillRect(-4,-66,8,26);
-    X.beginPath(); X.arc(0,-66,4,0,Math.PI*2); X.fill();
-    X.fillStyle=BRD; X.fillRect(-10,-50,8,14); X.fillRect(2,-50,8,14);
+    // Brazo izquierdo - PEGADO AL LADO
+    X.save(); 
+    X.translate(cx-55,sleeveY);
+    X.rotate(0.10); 
+    armShape(-5); 
     X.restore();
-  } else if(pose===1){
-    X.save(); X.translate(cx-46,bY-8); X.rotate(-0.2); armShape(-1); X.restore();
-    X.save(); X.translate(cx+47,bY-18); X.rotate(-62*Math.PI/180); armShape(1); X.restore();
-  } else if(pose===2){
-    X.save(); X.translate(cx-42,bY+4); X.rotate(56*Math.PI/180); armShape(-1); X.restore();
-    X.save(); X.translate(cx+42,bY+4); X.rotate(-56*Math.PI/180); armShape(1); X.restore();
-    X.fillStyle=BR; el(cx,bY+45,22,13); X.fill();
-    X.fillStyle=BRL; el(cx-6,bY+41,8,7); X.fill();
-  } else if(pose===3){
-    X.save(); X.translate(cx-46,bY-8); X.rotate(-0.1); armShape(-1); X.restore();
-    X.save(); X.translate(cx+47,bY+12); X.rotate(26*Math.PI/180);
-    X.fillStyle=BRD; el(0,-20,17,28); X.fill();
-    X.fillStyle=BR; el(0,-22,15,26); X.fill();
-    X.fillStyle=BRL; el(-4,-30,6,12); X.fill();
-    X.fillStyle=BR; el(4,-48,14,12); X.fill();
+    
+    // Brazo derecho - PEGADO AL LADO  
+    X.save(); 
+    X.translate(cx+55,sleeveY); 
+    X.rotate(-0.9); 
+    armShape(5); 
     X.restore();
-  } else if(pose===4){
-    const jig=Math.sin(t*.2)*8;
-    X.save(); X.translate(cx-46,bY-26); X.rotate((-66+jig)*Math.PI/180);
-    armShape(-1);
-    X.fillStyle=BRM; X.beginPath(); X.roundRect(-10,-54,20,16,6); X.fill();
-    X.fillStyle=BRL; el(-4,-52,5,4); X.fill();
-    X.restore();
-    X.save(); X.translate(cx+46,bY-26); X.rotate((66-jig)*Math.PI/180);
-    armShape(1);
-    X.fillStyle=BRM; X.beginPath(); X.roundRect(-10,-54,20,16,6); X.fill();
-    X.fillStyle=BRL; el(4,-52,5,4); X.fill();
-    X.restore();
-  } else {
-    X.save(); X.translate(cx-46,bY-8); X.rotate(-0.28); armShape(-1); X.restore();
-    X.save(); X.translate(cx+46,bY-8); X.rotate(0.28); armShape(1); X.restore();
+  } 
+  // POSE 1 = PENSANDO
+  else if(pose===1){
+    X.save(); X.translate(cx-75,sTop+20); X.rotate(0.05); armShape(-1); X.restore();
+    X.save(); X.translate(cx+72,sTop+5); X.rotate(-0.4); armShape(1); X.restore(); // mano a la barbilla
+  }
+  // POSE 2 = SALUDANDO
+  else if(pose===2){
+    X.save(); X.translate(cx-75,sTop+20); X.rotate(0.05); armShape(-1); X.restore();
+    X.save(); X.translate(cx+75,sTop-10); X.rotate(-0.8); armShape(1); X.restore(); // brazo arriba
+  } 
+  // POSE 3 = FELIZ
+  else if(pose===3){
+    X.save(); X.translate(cx-75,sTop+15); X.rotate(0.1); armShape(-1); X.restore();
+    X.save(); X.translate(cx+75,sTop+15); X.rotate(-0.1); armShape(1); X.restore();
+  }
+  // POSE 4 = EXPLICANDO con movimiento
+  else if(pose===4){
+    const jig=Math.sin(t*.2)*5;
+    X.save(); X.translate(cx-75,sTop+15); X.rotate((0.1+jig)*Math.PI/180); armShape(-1); X.restore();
+    X.save(); X.translate(cx+75,sTop+15); X.rotate((-0.1-jig)*Math.PI/180); armShape(1); X.restore();
+  }
+  // DEFAULT
+  else {
+    X.save(); X.translate(cx-75,sTop+20); X.rotate(0.05); armShape(-1); X.restore();
+    X.save(); X.translate(cx+75,sTop+20); X.rotate(-0.05); armShape(1); X.restore();
   }
 }
 
@@ -434,7 +441,7 @@ function tick(){
   if(blinking){blinkP+=0.15; if(blinkP>=1){blinking=false;blinkP=0;}}
   clicked=false;
   draw();
-  requestAnimationFrame(tick);
+  setTimeout(()=>requestAnimationFrame(tick), 33);
 }
 
 function next(){ goTo(pose+1); }
@@ -454,7 +461,7 @@ cw.addEventListener('mouseleave',()=>hover=false);
 cw.addEventListener('click',e=>{
   clicked=true;
   const r=cw.getBoundingClientRect();
-  addSparks(e.clientX-r.left,e.clientY-r.top,12,[BL,'#FFD700','#FF6B9D','#fff']);
+  addSparks(e.clientX-r.left,e.clientY-r.top,5,[BL,'#FFD700','#FF6B9D','#fff']);
   showBubble(MSGS['click'],2200);
 });
 

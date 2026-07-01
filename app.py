@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, g
+from flask import Flask, render_template, request, redirect, jsonify, url_for, session, flash, g
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import sqlite3
@@ -54,7 +54,7 @@ def login_required(f):
 def index():
     if 'user_id' in session:
         return redirect(url_for('dashboard'))
-    return render_template('index.html')
+    return render_template('index.html', page_mood='index')
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
@@ -73,7 +73,7 @@ def registro():
         db = get_db()
         error = None
 
-        # Validaciones según tu Informe Técnico
+        
         if not all([nombre, email, password, colegio]):
             error = 'Todos los campos son obligatorios.'
         elif len(password) < 8:
@@ -101,7 +101,7 @@ def registro():
         
         flash(error, 'error')
 
-    return render_template('registro.html')
+    return render_template('registro.html', page_mood='registro')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -124,7 +124,7 @@ def login():
         
         flash('Correo o contraseña incorrectos.', 'error')
     
-    return render_template('login.html')
+    return render_template('login.html', page_mood='login')
 
 @app.route('/logout')
 def logout():
@@ -137,7 +137,11 @@ def logout():
 def dashboard():
     db = get_db()
     user = db.execute('SELECT * FROM estudiantes WHERE id =?', (session['user_id'],)).fetchone()
-    return render_template('dashboard.html', user=user)
+    user = dict(user)
+    if 'foto_perfil' not in user or not user['foto_perfil']:
+        user['foto_perfil'] = 'img/nutria_mago.png'
+
+    return render_template('dashboard.html', user=user, active_page='inicio', page_mood='dashboard')
 
 @app.route('/mis_materias')
 @login_required
@@ -147,7 +151,7 @@ def mis_materias():
         'SELECT * FROM materias WHERE estudiante_id = ? ORDER BY fecha_creacion DESC',
         (session['user_id'],)  # Ojo: usa 'user_id' si así se llama en tu session
     ).fetchall()
-    return render_template('mis_materias.html', materias=materias)
+    return render_template('mis_materias.html', materias=materias, page_mood='mis_materias')
 
 @app.route('/borrar_materia/<int:id>', methods=['POST'])
 @login_required
@@ -181,20 +185,126 @@ def editar_materia(id):
 @app.route('/guardar_nota', methods=['POST'])
 @login_required
 def guardar_nota():
-    data = request.get_json()
-    nombre_materia = data['materia']
-    nota1 = float(data['nota1'])
-    nota2 = float(data['nota2']) 
-    nota3 = float(data['nota3'])
-    nota_final = round((nota1 + nota2 + nota3) / 3, 2)
+    try:
+        data = request.get_json()
+        nombre_materia = data['materia'].strip()
+        
+        # ARREGLA LA COMA: cambia 4,7 por 4.7
+        nota_str = str(data['nota']).replace(',', '.')
+        nueva_nota = float(nota_str)
+        
+        descripcion = data.get('descripcion', '')
+        periodo = data.get('periodo', '')
+        
+        db = get_db()
+        
+        materia = db.execute(
+            "SELECT id FROM materias WHERE nombre=? AND estudiante_id=?",
+            (nombre_materia, session['user_id'])
+        ).fetchone()
+        
+        if not materia:
+            cursor = db.execute(
+                "INSERT INTO materias (estudiante_id, nombre) VALUES (?,?)",
+                (session['user_id'], nombre_materia)
+            )
+            materia_id = cursor.lastrowid
+        else:
+            materia_id = materia['id']
+        
+        db.execute(
+            "INSERT INTO notas (materia_id, valor, descripcion, periodo) VALUES (?,?,?,?)",
+            (materia_id, nueva_nota, descripcion, periodo)
+        )
+        
+        promedio = db.execute(
+            "SELECT AVG(valor) FROM notas WHERE materia_id=?",
+            (materia_id,)
+        ).fetchone()[0]
+        
+        db.commit()
+        return jsonify({'status': 'ok', 'promedio': round(promedio, 2)})
     
+    except Exception as e:
+        print("ERROR EN FLASK:", e) # Esto lo ves en la terminal
+        return jsonify({'status': 'error', 'mensaje': str(e)}), 500
+
+        # RUTA NUEVA PARA LA DB CON TABLA notas SEPARADA
+@app.route('/guardar_materia_completa', methods=['POST'])
+@login_required
+def guardar_materia_completa():
+    try:
+        data = request.get_json()
+        nombre_materia = data['materia'].strip()
+        lista_notas = data['notas'] # ← Recibe [4.7, 2.0]
+        periodo = data.get('periodo', '1er Corte')
+        
+        db = get_db()
+        
+        materia = db.execute(
+            "SELECT id FROM materias WHERE nombre=? AND estudiante_id=?",
+            (nombre_materia, session['user_id'])
+        ).fetchone()
+        
+        if not materia:
+            cursor = db.execute(
+                "INSERT INTO materias (estudiante_id, nombre) VALUES (?,?)",
+                (session['user_id'], nombre_materia)
+            )
+            materia_id = cursor.lastrowid
+        else:
+            materia_id = materia['id']
+        
+        # Borra notas viejas y mete las nuevas
+        db.execute("DELETE FROM notas WHERE materia_id=?", (materia_id,))
+        
+        for nota_valor in lista_notas:
+            db.execute(
+                "INSERT INTO notas (materia_id, valor, periodo) VALUES (?,?,?)",
+                (materia_id, float(nota_valor), periodo)
+            )
+        
+        promedio = db.execute(
+            "SELECT AVG(valor) FROM notas WHERE materia_id=?",
+            (materia_id,)
+        ).fetchone()[0]
+        
+        db.commit()
+        return jsonify({'status': 'ok', 'promedio': round(promedio, 2)})
+    
+    except Exception as e:
+        print("ERROR EN FLASK:", str(e))
+        return jsonify({'status': 'error', 'mensaje': str(e)}), 500
+
+@app.route('/calendario')
+@login_required
+def calendario():
     db = get_db()
-    db.execute(
-        'INSERT INTO materias (estudiante_id, nombre, nota1, nota2, nota3, nota_final) VALUES (?, ?, ?, ?, ?, ?)',
-        (session['user_id'], nombre_materia, nota1, nota2, nota3, nota_final)
-    )
-    db.commit()
-    return jsonify({'status': 'ok', 'promedio': nota_final})
+    user = db.execute('SELECT * FROM estudiantes WHERE id =?', (session['user_id'],)).fetchone()
+    user = dict(user)
+    if 'foto_perfil' not in user or not user['foto_perfil']:
+        user['foto_perfil'] = 'img/nutria_mago.png'
+    
+    return render_template('calendario.html', user=user, active_page='calendario', page_mood='calendario')
+@app.route('/ajustes')
+@login_required
+def ajustes():
+    db = get_db()
+    user = db.execute('SELECT * FROM estudiantes WHERE id =?', (session['user_id'],)).fetchone()
+    user = dict(user)
+    if 'foto_perfil' not in user or not user['foto_perfil']:
+        user['foto_perfil'] = 'img/nutria_mago.png'
+    return render_template('ajustes.html', user=user, active_page='ajustes', page_mood='ajustes')
+
+@app.route('/ayuda')
+@login_required
+def ayuda():
+    db = get_db()
+    user = db.execute('SELECT * FROM estudiantes WHERE id =?', (session['user_id'],)).fetchone()
+    user = dict(user)
+    if 'foto_perfil' not in user or not user['foto_perfil']:
+        user['foto_perfil'] = 'img/nutria_mago.png'
+    return render_template('ayuda.html', user=user, active_page='ayuda', page_mood='ayuda')
 
     
 # --- INICIAR APP ---

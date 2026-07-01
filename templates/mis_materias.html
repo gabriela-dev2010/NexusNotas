@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Materias{% endblock %}
+
+{% block content %}
+<div style="padding: 30px;">
+    <h1 style="font-size: 32px; margin-bottom: 20px;">MIS MATERIAS</h1>
+    
+    <input type="text" placeholder="🔍 Buscar materia..." style="width:100%; padding:15px; border-radius:12px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:white; margin-bottom:25px;">
+    
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:20px;">
+        {% for materia in materias %}
+        {% set promedio = materia.nota_final if materia.nota_final else 0 %}
+        {% set color = '#10b981' if promedio >= 3.2 else '#f59e0b' if promedio >= 2.5 else '#ef4444' %}
+        <div style="background:rgba(44,82,130,0.4); border-radius:16px; padding:20px; border:1px solid rgba(255,255,255,0.1);">
+            <h3 style="font-size:20px; margin-bottom:10px;">{{ materia.nombre }}</h3>
+            <div style="font-size:36px; font-weight:800; color:{{ color }}; margin:10px 0;">{{ "%.2f"|format(promedio) }}</div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
+                <div style="width:12px; height:12px; border-radius:50%; background:{{ color }};"></div>
+                <span style="color:rgba(255,255,255,0.7);">{{ materia.nota1 + materia.nota2 + materia.nota3 }} notas</span>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <a href="{{ url_for('editar_materia', id=materia.id) }}" style="flex:1; padding:10px; border-radius:8px; background:{{ color }}; color:#0a1929; text-align:center; text-decoration:none; font-weight:700;">Ver</a>
+                <a href="{{ url_for('editar_materia', id=materia.id) }}" style="flex:1; padding:10px; border-radius:8px; background:transparent; border:2px solid {{ color }}; color:{{ color }}; text-align:center; text-decoration:none; font-weight:700;">Editar</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <a href="/dashboard" style="display:block; width:fit-content; margin:30px auto 0; padding:15px 40px; background:#22d3ee; color:#0a1929; border-radius:50px; text-decoration:none; font-weight:700;">
+        + Agregar Materia Nueva
+    </a>
+</div>
+{% endblock %}
+{% include 'components/mascota.html' %}
+    <script src="{{ url_for('static', filename='js/mascota.js') }}?v={{ range(1, 9999) | random }}"></script>
+    <script>initNexus();</script>

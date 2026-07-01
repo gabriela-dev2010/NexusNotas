@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Calendario{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1><i class="fas fa-calendar"></i> Tu Calendario</h1>
+    <p>Aquí va tu calendario completo con FullCalendar.</p>
+    
+    <!-- MUEVE AQUÍ TU CALENDARIO DE dashboard.html SI QUIERES -->
+    <div id="calendar" style="background: white; padding: 20px; border-radius: 15px;"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Pega aquí tus scripts de FullCalendar -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es'
+        });
+        calendar.render();
+    });
+</script>
+{% include 'components/mascota.html' %}
+    <script src="{{ url_for('static', filename='js/mascota.js') }}?v={{ range(1, 9999) | random }}"></script>
+    <script>initNexus();</script>
+{% endblock %}

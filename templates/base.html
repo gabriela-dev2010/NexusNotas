@@ -4,23 +4,107 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NexusNotas - {% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='mascota.css') }}">
+
+    <!-- TU CSS - ORDEN IMPORTANTE -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mascota.css') }}">
+
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        {% block content %}{% endblock %}
+    <div class="app-container">
+
+        <!-- SIDEBAR IZQUIERDO CON AVATAR -->
+        <aside class="sidebar">
+            <div class="sidebar-avatar">
+                <img src="{{ url_for('static', filename='img/nexus.mago.png' + user['foto_perfil'] + '.png') }}"
+                     alt="Perfil de {{ user['nombre'] }}">
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('dashboard') }}"
+                   class="nav-icon {% if active_page == 'inicio' %}active{% endif %}"
+                   title="Inicio">
+                    <i class="fas fa-home"></i>
+                </a>
+
+                <a href="{{ url_for('mis_materias') }}"
+                   class="nav-icon {% if active_page == 'mis_materias' %}active{% endif %}"
+                   title="Mis Materias">
+                    <i class="fas fa-book"></i>
+                </a>
+
+                <a href="{{ url_for('calendario') }}"
+                   class="nav-icon {% if active_page == 'calendario' %}active{% endif %}"
+                   title="Calendario">
+                    <i class="fas fa-calendar"></i>
+                </a>
+
+                <a href="{{ url_for('ajustes') }}"
+                   class="nav-icon {% if active_page == 'ajustes' %}active{% endif %}"
+                   title="Ajustes">
+                    <i class="fas fa-cog"></i>
+                </a>
+
+                <a href="{{ url_for('ayuda') }}"
+                   class="nav-icon {% if active_page == 'ayuda' %}active{% endif %}"
+                   title="Ayuda">
+                    <i class="fas fa-question-circle"></i>
+                </a>
+            </nav>
+
+            <a href="{{ url_for('logout') }}" class="nav-icon logout" title="Cerrar Sesión">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+
+            <!-- HEADER CON LOGO Y SALUDO -->
+            <header class="header">
+                <div class="header-left">
+                    <span class="logo-text">NexusNotas</span>
+                    <h1>{% block header %}Hola, {{ user['nombre'].split()[0] }}{% endblock %}</h1>
+                </div>
+                <button class="icon-btn" title="Notificaciones">
+                    <i class="fas fa-bell"></i>
+                </button>
+            </header>
+
+            <!-- MENSAJES FLASH - CON PADDING PROPIO SIN ROMPER EL GRID -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div style="padding: 0 25px; margin-top: 20px; margin-bottom: -5px;">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- AQUÍ VA EL CONTENIDO DE CADA PÁGINA -->
+            {% block content %}{% endblock %}
+
+        </main>
     </div>
-{% include 'components/mascota.html' %}
-<script src="{{ url_for('static', filename='js/mascota.js') }}"></script>
+
+    <!-- MASCOTA NEXUS -->
+    {% include 'components/mascota.html' %}
+
+    <!-- SCRIPTS -->
+    <script src="{{ url_for('static', filename='js/mascota.js') }}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

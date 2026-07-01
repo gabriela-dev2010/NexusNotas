@@ -1,548 +1,232 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - NexusNotas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- FullCalendar CSS -->
-    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
-        
-        :root {
-            --azul-principal: #1E88E5;
-            --azul-oscuro: #0D47A1;
-            --azul-claro: #E3F2FD;
-            --bg-dark: #0a192f;
-            --card-bg: rgba(255,255,255,0.05);
-            --success: #4CAF50;
-            --danger: #F44336;
-            --warning: #FF9800;
-        }
+{% extends "base.html" %}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+{% block title %}Inicio{% endblock %}
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg-dark);
-            color: white;
-            min-height: 100vh;
-        }
+{% block content %}
 
-        /* NAVBAR */
-      .navbar {
-            background: rgba(13, 71, 161, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+<!-- DASHBOARD CON GRID SIN DESBORDE -->
+<div class="dashboard-container">
+    <!-- COLUMNA IZQUIERDA: PERFIL + CALCULADORA -->
+    <div class="sidebar-content">
+        <!-- TARJETA USUARIO -->
+        <div class="card-info">
+            <h3><i class="fas fa-user-graduate"></i> Tu Perfil</h3>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
-      .logo { font-size: 24px; font-weight: 800; color: white; }
-      .nav-user { display: flex; align-items: center; gap: 20px; }
-      .nav-user span { font-weight: 600; color: var(--azul-claro); }
-      .btn-logout {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-      .btn-logout:hover { background: rgba(255,255,255,0.2); }
-
-        /* LAYOUT PRINCIPAL */
-      .container {
-            max-width: 1600px;
-            margin: 30px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 380px 1fr;
-            gap: 30px;
-        }
-
-        /* SIDEBAR IZQUIERDA */
-      .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-      .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-      .card h2 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--azul-claro);
-        }
-
-        /* INFO USUARIO */
-      .user-info {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-      .info-item {
-            background: rgba(30,136,229,0.15);
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-      .info-item.label { font-size: 11px; opacity: 0.7; margin-bottom: 4px; }
-      .info-item.value { font-size: 20px; font-weight: 700; color: var(--azul-claro); }
-
-        /* CALCULADORA */
-      .calc-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-      .calc-item label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            opacity: 0.9;
-        }
-
-      .calc-item input {
-            width: 100%;
-            padding: 10px 12px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.9);
-            color: var(--azul-oscuro);
-            font-size: 14px;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-        }
-
-      .calc-item input:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(66,165,245,0.4);
-        }
-
-      .btn-calcular {
-            width: 100%;
-            padding: 13px;
-            background: var(--azul-principal);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 8px;
-        }
-
-      .btn-calcular:hover {
-            background: #1976D2;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(30,136,229,0.4);
-        }
-
-        /* RESULTADO */
-      .resultado {
-            margin-top: 20px;
-            padding: 18px;
-            border-radius: 12px;
-            text-align: center;
-            animation: fadeIn 0.5s;
-        }
-
-      .resultado.success { background: rgba(76,175,80,0.2); border: 2px solid var(--success); }
-      .resultado.danger { background: rgba(244,67,54,0.2); border: 2px solid var(--danger); }
-      .resultado h3 { font-size: 16px; margin-bottom: 8px; }
-      .resultado.nota-grande { font-size: 40px; font-weight: 800; margin: 8px 0; }
-      .resultado p { font-size: 13px; opacity: 0.9; }
-
-        /* CALENDARIO */
-      .calendar-container {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        /* Personalizar FullCalendar */
-        #calendar {
-            background: rgba(255,255,255,0.02);
-            border-radius: 12px;
-            padding: 20px;
-        }
-        
-       .fc { font-family: 'Poppins', sans-serif; }
-       .fc-toolbar-title { font-size: 22px!important; font-weight: 700!important; }
-       .fc-button {
-            background: var(--azul-principal)!important;
-            border: none!important;
-            border-radius: 8px!important;
-            font-weight: 600!important;
-            padding: 8px 16px!important;
-        }
-       .fc-button:hover { background: #1976D2!important; }
-       .fc-button-active { background: var(--azul-oscuro)!important; }
-       .fc-daygrid-day-number { color: white; font-weight: 600; }
-       .fc-col-header-cell { background: rgba(30,136,229,0.2); }
-       .fc-day-today { background: rgba(30,136,229,0.15)!important; }
-       .fc-event {
-            background: var(--azul-principal);
-            border: none;
-            border-radius: 6px;
-            padding: 3px 6px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* ALERTAS */
-      .alert {
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-      .alert-success { background: rgba(76,175,80,0.2); color: #81C784; border-left: 4px solid var(--success); }
-      .alert-error { background: rgba(244,67,54,0.2); color: #E57373; border-left: 4px solid var(--danger); }
-
-        /* RESPONSIVE */
-        @media (max-width: 1200px) {
-          .container { grid-template-columns: 1fr; }
-          .sidebar { display: grid; grid-template-columns: 1fr 1fr; }
-        }
-
-        @media (max-width: 768px) {
-          .sidebar { grid-template-columns: 1fr; }
-          .user-info { grid-template-columns: 1fr; }
-          .navbar { padding: 15px 20px; }
-          .nav-user span { display: none; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-</head>
-<body>
-    <!-- NAVBAR -->
-    <nav class="navbar">
-        <div class="logo">NexusNotas</div>
-        <div class="nav-user">
-            <span>Hola, {{ user['nombre'].split()[0] }}</span>
-            <a href="{{ url_for('logout') }}" class="btn-logout">
-                <i class="fas fa-sign-out-alt"></i> Salir
-            </a>
-        </div>
-    </nav>
-
-    <div class="container">
-        <!-- SIDEBAR IZQUIERDA -->
-        <div class="sidebar">
-            <!-- TARJETA USUARIO -->
-            <div class="card">
-                <h2><i class="fas fa-user-graduate"></i> Tu Perfil</h2>
-                
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}">{{ message }}</div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-
-                <div class="user-info">
-                    <div class="info-item">
-                        <div class="label">Mínima</div>
-                        <div class="value">{{ user['nota_min'] }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="label">Máxima</div>
-                        <div class="value">{{ user['nota_max'] }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="label">Aprueba</div>
-                        <div class="value">{{ user['nota_aprob'] }}</div>
-                    </div>
+            <div class="user-info">
+                <div class="info-item">
+                    <div class="label">Mínima</div>
+                    <div class="value">{{ user['nota_min'] }}</div>
                 </div>
-
-                <p style="opacity: 0.8; font-size: 13px; line-height: 1.6;">
-                    <b><i class="fas fa-school"></i> {{ user['colegio'] }}</b><br>
-                    <b><i class="fas fa-envelope"></i> {{ user['email'] }}</b>
-                </p>
+                <div class="info-item">
+                    <div class="label">Máxima</div>
+                    <div class="value">{{ user['nota_max'] }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Aprueba</div>
+                    <div class="value">{{ user['nota_aprob'] }}</div>
+                </div>
             </div>
 
-            <!-- TARJETA CALCULADORA -->
-            <div class="card">
-                <h2><i class="fas fa-calculator"></i> Calculadora</h2>
-                    <div class="calc-grid">
-                        <div class="calc-item" style="grid column: 1 / -1;">
-                            <label>Materia</label>
-                            <input type="text" id=="nombreMateria" placeholder="Ej: Matematicas" required>
-                        </div>
-                        <div class="calc-item">
-                            <label>Promedio Actual</label>
-                            <input type="text" id="promedioActual" readonly style= "background:rgba(79,172,254,0.2); font-weight:700; color:#4facfe;"placeholder="--">
-                        </div>
-
-                        <div class="calc-item">
-                            <label>Estado</label>
-                            <input type="text" id="estadoActual" readonly style= "background:rgba(79,172,254,0.2); font-weight: border-color:#4facfe;"placeholder="--">
-                        </div>
-                        </div>
-                       <!-- 4. NOTAS -->
-    <div style="margin:15px 0;">
-        <label style="display:block; margin-bottom:8px; font-weight:600; color:#cbd5e1;">Tus Notas:</label>
-        <div id="contenedor-notas">
-            <div class="calc-item" style="margin-bottom:10px;">
-                <input type="number" step="0.01" min="0" max="{{ user['nota_max'] if user else 5.0 }}" placeholder="Nota 1" class="nota-input" oninput="calcularAutomatico()">
-            </div>
+            <p><i class="fas fa-school"></i> {{ user['colegio'] }}</p>
+            <p><i class="fas fa-envelope"></i> {{ user['email'] }}</p>
         </div>
-        <button type="button" onclick="agregarNota()" style="background:rgba(79,172,254,0.2); color:#4facfe; border:1px solid #4facfe; border-radius:8px; padding:10px 15px; cursor:pointer; font-weight:600; width:100%; margin-top:8px;">
-            + Agregar otra nota
-        </button>
+
+        <!-- CALCULADORA QUE SÍ FUNCIONA CON TU BACKEND -->
+        <div class="card-calc">
+            <h3><i class="fas fa-calculator"></i> Calculadora</h3>
+            <div class="calc-config">
+                <input type="text" id="nombreMateria" placeholder="Materia" required>
+                <input type="text" id="promedioActual" readonly placeholder="--">
+            </div>
+            <div class="calc-config">
+                <input type="text" id="estadoActual" readonly placeholder="--">
+                <input type="text" id="periodoMateria" placeholder="1er Corte" value="1er Corte">
+            </div>
+            
+            <div style="margin:15px 0;">
+                <label style="display:block; margin-bottom:8px; font-weight:600; color:#cbd5e1;">Tus Notas:</label>
+                <div id="contenedor-notas">
+                    <div class="calc-item" style="margin-bottom:10px;">
+                        <input type="number" step="0.01" min="0" max="{{ user['nota_max'] }}" 
+                               placeholder="Nota 1" class="nota-input" oninput="calcularAutomatico()">
+                    </div>
+                <button type="button" onclick="agregarNota()" class="btn-add" style="width:100%; padding:10px; margin-top:8px;">
+                    + Agregar otra nota
+                </button>
+            </div>
+
+            <div id="resultado-auto" style="display:none; margin-top:15px; padding:15px; border-radius:10px; text-align:center; font-weight:600;">
+                <div id="texto-falta" style="font-size:0.95rem;"></div>
+            </div>
+
+            <button type="button" onclick="guardarMateria()" class="btn-calcular" style="margin-top:15px;">
+                <i class="fas fa-save"></i> Guardar Materia
+            </button>
+        </div>
     </div>
 
-    <!-- 5. RESULTADO AUTOMÁTICO -->
-    <div id="resultado-auto" style="display:none; margin-top:15px; padding:15px; border-radius:10px; text-align:center; font-weight:600;">
-        <div id="texto-falta" style="font-size:0.95rem;"></div>
-    </div>
-
-    <!-- 6. BOTÓN GUARDAR -->
-    <button type="button" onclick="guardarMateria()" style="background:linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color:white; padding:12px; border:none; border-radius:10px; font-weight:700; cursor:pointer; width:100%; margin-top:15px; box-shadow:0 4px 15px rgba(79, 172, 254, 0.3);">
-        <i class="fas fa-bolt"></i> Guardar Materia
-    </button>
-</div>                  
-        
-
-        <!-- CALENDARIO DERECHA -->
-        <div class="calendar-container">
-            <h2 style="margin-bottom: 20px; color: var(--azul-claro);">
-                <i class="fas fa-calendar-days"></i> Calendario Académico
-            </h2>
+    <!-- COLUMNA DERECHA: CALENDARIO -->
+    <div class="calendar-section">
+        <div class="calendar-wrapper">
+            <h3><i class="fas fa-calendar-alt"></i> Calendario Académico</h3>
             <div id="calendar"></div>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <!-- FullCalendar JS -->
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'es',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,listWeek'
-                },
-                buttonText: {
-                    today: 'Hoy',
-                    month: 'Mes',
-                    list: 'Lista'
-                },
-                events: [
-                    // Aquí después conectas con tu BD
-                    {
-                        title: 'Parcial Matemáticas',
-                        start: '2026-06-20',
-                        color: '#F44336'
-                    },
-                    {
-                        title: 'Entrega Proyecto',
-                        start: '2026-06-25',
-                        color: '#FF9800'
-                    },
-                    {
-                        title: 'Exposición Inglés',
-                        start: '2026-07-02',
-                        color: '#4CAF50'
-                    }
-                ],
-                eventClick: function(info) {
-                    alert('Evento: ' + info.event.title + '\nFecha: ' + info.event.start.toLocaleDateString());
-                },
-                dateClick: function(info) {
-                    let titulo = prompt('Agregar evento para ' + info.dateStr + ':');
-                    if (titulo) {
-                        calendar.addEvent({
-                            title: titulo,
-                            start: info.dateStr,
-                            color: '#1E88E5'
-                        });
-                        // Aquí después haces fetch a Flask para guardar en BD
-                    }
-                }
-            });
-            calendar.render();
+{% block extra_js %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script>
+    // ===== CALENDARIO =====
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            height: 'auto',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,listWeek'
+            },
+            buttonText: {
+                today: 'Hoy',
+                month: 'Mes',
+                list: 'Lista'
+            }
         });
-    </script>
-    <!-- SCRIPT DE LA CALCULADORA NUEVA -->
-    <script>
-const NOTA_MINIMA = {{ user['nota_aprob'] if user else 3.0 }};
-const NOTA_MAX = {{ user['nota_max'] if user else 5.0 }};
-
-function calcularAutomatico() {
-    const inputs = document.querySelectorAll('.nota-input');
-    const notas = [];
-
-    inputs.forEach(input => {
-        const valor = parseFloat(input.value);
-        if (!isNaN(valor) && valor >= 0 && valor <= NOTA_MAX) {
-            notas.push(valor);
-        }
+        calendar.render();
     });
 
-    const promedioInput = document.getElementById('promedioActual');
-    const estadoInput = document.getElementById('estadoActual');
-    const resultadoDiv = document.getElementById('resultado-auto');
-    const textoFalta = document.getElementById('texto-falta');
+    // ===== CALCULADORA CON TU BACKEND =====
+    const NOTA_MINIMA = {{ user['nota_aprob'] }};
+    const NOTA_MAX = {{ user['nota_max'] }};
 
-    if (notas.length === 0) {
-        promedioInput.value = '--';
-        estadoInput.value = '--';
-        estadoInput.style.color = '#cbd5e1';
-        resultadoDiv.style.display = 'none';
-        return;
-    }
+    function calcularAutomatico() {
+        const inputs = document.querySelectorAll('.nota-input');
+        const notas = [];
 
-    const suma = notas.reduce((a, b) => a + b, 0);
-    const promedio = suma / notas.length;
-
-    promedioInput.value = promedio.toFixed(2);
-
-    if (promedio >= NOTA_MINIMA) {
-        estadoInput.value = 'GANANDO ✅';
-        estadoInput.style.color = '#10b981';
-        resultadoDiv.style.display = 'block';
-        resultadoDiv.style.background = 'rgba(16, 185, 129, 0.2)';
-        resultadoDiv.style.border = '2px solid #10b981';
-        textoFalta.innerHTML = `¡Ya pasas con ${promedio.toFixed(2)}! 🎉`;
-        textoFalta.style.color = '#10b981';
-    } else {
-        const falta = ((NOTA_MINIMA * (notas.length + 1)) - suma).toFixed(2);
-        estadoInput.value = 'PERDIENDO ❌';
-        estadoInput.style.color = '#ef4444';
-        resultadoDiv.style.display = 'block';
-        resultadoDiv.style.background = 'rgba(239, 68, 68, 0.2)';
-        resultadoDiv.style.border = '2px solid #ef4444';
-
-        if (falta > NOTA_MAX) {
-            textoFalta.innerHTML = `Necesitarías ${falta} pero tu máxima es ${NOTA_MAX} 😰`;
-        } else if (falta <= 0) {
-            textoFalta.innerHTML = `¡Con la próxima nota ya pasas! 🙏`;
-        } else {
-            textoFalta.innerHTML = `Te falta sacar ${falta} en la próxima nota 📚`;
-        }
-        textoFalta.style.color = '#ef4444';
-    }
-}
-
-function agregarNota() {
-    const contenedor = document.getElementById('contenedor-notas');
-    const numNotas = contenedor.querySelectorAll('.nota-input').length + 1;
-
-    const div = document.createElement('div');
-    div.className = 'calc-item';
-    div.style.marginBottom = '10px';
-    div.innerHTML = `
-        <input type="number" step="0.01" min="0" max="${NOTA_MAX}"
-               placeholder="Nota ${numNotas}"
-               class="nota-input"
-               oninput="calcularAutomatico()">
-    `;
-    contenedor.appendChild(div);
-}
-
-async function guardarMateria() {
-    const nombre = document.getElementById('nombreMateria').value;
-    const promedio = document.getElementById('promedioActual').value;
-    
-    // 1. Agarramos TODAS las notas individuales
-    const notasInputs = document.querySelectorAll('#contenedor-notas input[type="number"]');
-    const notas = [];
-    notasInputs.forEach(input => {
-        if(input.value) notas.push(parseFloat(input.value));
-    });
-
-    if (!nombre) {
-        alert('Escribe el nombre de la materia primero');
-        return;
-    }
-    if (notas.length < 2) {
-        alert('Agrega al menos 2 notas');
-        return;
-    }
-
-    // 2. MANDAMOS A FLASK, NO A LOCALSTORAGE
-    try {
-        const response = await fetch('/guardar_nota', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                materia: nombre,
-                nota1: notas[0] || 0,
-                nota2: notas[1] || 0,
-                nota3: notas[2] || 0
-            })
+        inputs.forEach(input => {
+            const valor = parseFloat(input.value);
+            if (!isNaN(valor) && valor >= 0 && valor <= NOTA_MAX) {
+                notas.push(valor);
+            }
         });
 
-        const data = await response.json();
+        const promedioInput = document.getElementById('promedioActual');
+        const estadoInput = document.getElementById('estadoActual');
+        const resultadoDiv = document.getElementById('resultado-auto');
+        const textoFalta = document.getElementById('texto-falta');
 
-        if (data.status == 'ok') {
-            alert(`✅ ${nombre} guardada con promedio ${data.promedio}`);
-            location.reload(); // Recarga pa' que veas la materia en la tabla
-        } else {
-            alert('Error al guardar en la base de datos 😭');
+        if (notas.length === 0) {
+            promedioInput.value = '--';
+            estadoInput.value = '--';
+            resultadoDiv.style.display = 'none';
+            return;
         }
-    } catch (error) {
-        alert('Error de conexión con Flask');
-        console.log(error);
-    }
-    // CAMBIA LA CARITA DE LA MASCOTA SEGÚN LA NOTA
-actualizarMascotaNexus(parseFloat(promedio), 3.0, 100);
 
-    // Limpiar campos
-    document.getElementById('nombreMateria').value = '';
-    document.getElementById('contenedor-notas').innerHTML = `
-        <div class="calc-item" style="margin-bottom:10px;">
+        const suma = notas.reduce((a, b) => a + b, 0);
+        const promedio = suma / notas.length;
+
+        promedioInput.value = promedio.toFixed(2);
+
+        if (promedio >= NOTA_MINIMA) {
+            estadoInput.value = 'GANANDO ✅';
+            estadoInput.style.color = '#10b981';
+            resultadoDiv.style.display = 'block';
+            resultadoDiv.style.background = 'rgba(16, 185, 129, 0.2)';
+            resultadoDiv.style.border = '2px solid #10b981';
+            textoFalta.innerHTML = `¡Ya pasas con ${promedio.toFixed(2)}! 🎉`;
+            textoFalta.style.color = '#10b981';
+        } else {
+            const falta = ((NOTA_MINIMA * (notas.length + 1)) - suma).toFixed(2);
+            estadoInput.value = 'PERDIENDO ❌';
+            estadoInput.style.color = '#ef4444';
+            resultadoDiv.style.display = 'block';
+            resultadoDiv.style.background = 'rgba(239, 68, 68, 0.2)';
+            resultadoDiv.style.border = '2px solid #ef4444';
+            
+            if (falta > NOTA_MAX) {
+                textoFalta.innerHTML = `Necesitarías ${falta} pero tu máxima es ${NOTA_MAX} 😰`;
+            } else {
+                textoFalta.innerHTML = `Te falta sacar ${falta} en la próxima nota 📚`;
+            }
+            textoFalta.style.color = '#ef4444';
+        }
+    }
+
+    function agregarNota() {
+        const contenedor = document.getElementById('contenedor-notas');
+        const numNotas = contenedor.querySelectorAll('.nota-input').length + 1;
+
+        const div = document.createElement('div');
+        div.className = 'calc-item';
+        div.style.marginBottom = '10px';
+        div.innerHTML = `
             <input type="number" step="0.01" min="0" max="${NOTA_MAX}"
-                   placeholder="Nota 1" class="nota-input" oninput="calcularAutomatico()">
-        </div>
-    `;
-    calcularAutomatico();
-}
+                   placeholder="Nota ${numNotas}"
+                   class="nota-input"
+                   oninput="calcularAutomatico()">
+        `;
+        contenedor.appendChild(div);
+    }
 
-// Ejecutar al cargar
-document.addEventListener('DOMContentLoaded', calcularAutomatico);
+    async function guardarMateria() {
+        const nombre = document.getElementById('nombreMateria').value.trim();
+        const periodo = document.getElementById('periodoMateria').value.trim() || '1er Corte';
+        
+        const notasInputs = document.querySelectorAll('#contenedor-notas input[type="number"]');
+        const notas = [];
+        notasInputs.forEach(input => {
+            if(input.value) notas.push(parseFloat(input.value));
+        });
+
+        if (!nombre) {
+            alert('Escribe el nombre de la materia primero');
+            return;
+        }
+        if (notas.length < 1) {
+            alert('Agrega al menos 1 nota');
+            return;
+        }
+
+        try {
+            const response = await fetch('/guardar_materia_completa', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    materia: nombre,
+                    notas: notas,
+                    periodo: periodo
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.status == 'ok') {
+                alert(`✅ ${nombre} guardada con promedio ${data.promedio}`);
+                location.reload();
+            } else {
+                alert('Error al guardar: ' + data.mensaje);
+            }
+        
+    } catch (error) {
+            alert('Error de conexión con Flask');
+            console.log(error);
+        }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      calcularAutomatico();
+      setMood('{{page_mood}}');
+    });
 </script>
-</body>
-</html>
+{% endblock %}
